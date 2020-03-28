@@ -1,7 +1,7 @@
 ## Apache RocketMQ 21天学习源码
-###第一天:搭建环境
-###第二天：NameServer学习
-####1、启动类
+### 第一天:搭建环境
+### 第二天：NameServer学习
+#### 1、启动类
 org.apache.rocketmq.namesrv.NamesrvStartup
 
 1⃣️创建NamesrvConfig类和NettyServerConfig类，
