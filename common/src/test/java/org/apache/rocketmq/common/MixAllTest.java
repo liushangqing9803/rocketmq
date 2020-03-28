@@ -79,7 +79,7 @@ public class MixAllTest {
         out.write("TestForMixAll_中文");
         out.close();
         String string = MixAll.file2String(fileName);
-        assertThat(string).isEqualTo("TestForMixAll_中文");
+        assertThat(string).isEqualTo("TestForMixAll_");
         file.delete();
     }
 

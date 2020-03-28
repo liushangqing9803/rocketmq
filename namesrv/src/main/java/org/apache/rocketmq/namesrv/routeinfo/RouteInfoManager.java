@@ -45,14 +45,29 @@ import org.apache.rocketmq.common.protocol.route.TopicRouteData;
 import org.apache.rocketmq.common.sysflag.TopicSysFlag;
 import org.apache.rocketmq.remoting.common.RemotingUtil;
 
+/**
+ * 路由信息管理
+ */
 public class RouteInfoManager {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
     private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
+    //可重入读写锁，操作维护元数据信息使用
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    //topic信息，Topic名字为key，value的大小等于topic数据存储的master broker个数
+    //QueuData里包括Broker名称，读队列数量，写队列数量，同步标识
+    //TODO 为什么不使用Map实现？
     private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
+    //broker信息，包含集群名称，broker名称，broker地址（
+    //Map存储，一主多从，brokerId为key，主都是0，从大于0）
     private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
+    //集群信息，一个集群下的所有broker
     private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
+    //类似brokerAddrTable，区别一个在于key，这个key是唯一的，多个集群的brokerName可相同
+    //这里数据实时，实时更新维护Broker信息，后期会根据这个移除不活动的，超时120未更新
+    //    前面说到Broker启动后向所有NameServer发送心跳信息，每隔30S发送自己的心跳包，
+    //  NameServer收到后更新BrokerLiveTable中的BrokerLiveInfo信息。
     private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
+    //过滤服务器。服务端过滤。
     private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
 
     public RouteInfoManager() {
