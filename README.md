@@ -31,4 +31,8 @@ NamesrvController初始化，配置信息加载-》创建netty服务对象-》�
 
 5⃣️注册钩子函数，在jvm退出是关闭数据controller的线程池和服务等
 
+### 第三天 broker的注册 删除 发现
+1. 向所有namesrv上注册org.apache.rocketmq.broker.BrokerController.doRegisterBrokerAll
+2. 30秒一次重新注册（心跳），namesrv 会更新心跳时间戳。
+3. namesrv收到注册消息。处理RouteInfoManager 类。判断是否为第一次
 
